@@ -1,6 +1,7 @@
 import socket
 import subprocess
 import ipaddress
+import sys
 import threading
 import time
 from queue import Queue
@@ -17,15 +18,14 @@ def show_banner():
 ██      ██   ██ ██  ██ ██            ██ ██      ██   ██ ██  ██ ██ ██  ██ ██ ██      ██   ██ 
 ███████ ██   ██ ██   ████       ███████  ██████ ██   ██ ██   ████ ██   ████ ███████ ██   ██ 
 
-by m1ch3al\n\n
-    """
+by m1ch3al\n"""
     print(banner)
 
 
 def get_dns_by_ip(ip_address):
     try:
         host_name, alias_list, ip_list = socket.gethostbyaddr(ip_address)
-        return host_name  # Restituisce il nome DNS
+        return host_name
     except socket.herror as e:
         return None
 
@@ -38,7 +38,7 @@ def ping(address):
         if result.returncode == 0:
             hostname = get_dns_by_ip(address)
             if hostname is not None:
-                scan_result.put_nowait("{} | ({})".format(address, hostname))
+                scan_result.put_nowait("{} ({})".format(address, hostname))
             else:
                 scan_result.put_nowait("{}".format(address))
             return True
@@ -69,17 +69,38 @@ def show_results(lan_information):
     while not lan_information.empty():
         reachable_item = lan_information.get_nowait()
         print(" + {}".format(reachable_item))
-    print("\n")
+    print("")
+
+
+def validate_cidr(ip_string):
+    try:
+        network = ipaddress.ip_network(ip_string, strict=False)
+        return True
+    except ValueError as e:
+        return False
+
+def quitting():
+    print("Incorrect or missing argument(s)")
+    print("Usage : python lan-scanner.py 192.168.1.0/24")
+    sys.exit(-1)
+
 
 def main():
     global threads
     global scan_result
-    network = input("Insert subnet to scan (es. 192.168.1.0/24): ")
-    scan_lan(network)
-    time.sleep(2)
-    for thread in threads:
-        thread.join()
-    show_results(scan_result)
+    show_banner()
+
+    if len(sys.argv) != 2:
+        quitting()
+    else:
+        if validate_cidr(sys.argv[1]) is False:
+            quitting()
+
+        scan_lan(sys.argv[1])
+        time.sleep(2)
+        for thread in threads:
+            thread.join()
+        show_results(scan_result)
 
 
 if __name__ == "__main__":
